@@ -18,7 +18,7 @@
 
         .preserve-3d {
             transform-style: preserve-3d;
-            transition: transform 0.6s;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .backface-hidden {
@@ -32,39 +32,44 @@
         body {
             -ms-overflow-style: none;
             scrollbar-width: none;
+            -webkit-tap-highlight-color: transparent;
         }
     </style>
 </head>
 
-<body class="bg-pink-50 min-h-screen flex flex-col items-center justify-center font-sans overflow-hidden">
+<body class="select-none bg-pink-50 min-h-screen flex flex-col items-center font-sans overflow-hidden">
 
-    <div class="text-center mb-6">
-        <h1 class="text-xl font-bold text-pink-600 mb-1">デジタル組員カード</h1>
+    <div class="text-center mb-6 mt-6">
+        <h1 class="text-xl font-bold text-pink-600 mb-1">てんし組 デジタル組員カード</h1>
         <p class="text-[10px] text-pink-400">りえるちゃんのてんし組なのです！</p>
     </div>
 
     <div class="perspective-1000 w-[340px] h-[200px] md:w-[400px] md:h-[240px] cursor-pointer" onclick="flipCard()">
         <div id="card-inner" class="relative w-full h-full preserve-3d shadow-2xl rounded-2xl">
-
             <div id="front-display"
-                class="absolute w-full h-full backface-hidden bg-white rounded-2xl flex items-center justify-center border-2 border-pink-200 overflow-hidden">
-                <div class="text-center p-4">
-                    <p class="text-pink-300 text-sm">表面をアップロード</p>
-                    <p class="text-pink-200 text-[10px] mt-2">(設定から画像を選んでね)</p>
+                class="absolute w-full h-full backface-hidden bg-white rounded-2xl flex items-center justify-center border-2 border-pink-200 overflow-hidden text-center p-4">
+                <div>
+                    <p class="text-pink-300 text-sm font-bold">表面未設定</p>
+                    <p class="text-pink-200 text-[10px] mt-2">設定からアップロードしてくださいね</p>
                 </div>
             </div>
-
             <div id="back-display"
-                class="absolute w-full h-full backface-hidden rotate-y-180 bg-white rounded-2xl flex items-center justify-center border-2 border-pink-200 overflow-hidden">
-                <div class="text-center p-4">
-                    <p class="text-pink-300 text-sm">裏面をアップロード</p>
-                </div>
+                class="absolute w-full h-full backface-hidden rotate-y-180 bg-white rounded-2xl flex items-center justify-center border-2 border-pink-200 overflow-hidden text-center p-4">
+                <p class="text-pink-300 text-sm font-bold">裏面未設定</p>
             </div>
-
         </div>
     </div>
 
     <p class="mt-6 text-[11px] text-gray-400 animate-pulse">タップして裏返す</p>
+
+    <button onclick="rotateCard(event)"
+        class="mt-4 px-4 py-2 bg-white border border-pink-100 text-pink-400 text-[10px] rounded-full shadow-sm active:scale-95 flex items-center gap-2 transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        180°回転して相手に見せる
+    </button>
 
     <button onclick="toggleSettings()"
         class="fixed bottom-6 right-6 w-12 h-12 bg-pink-400 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-pink-500 transition-colors z-50">
@@ -78,35 +83,70 @@
 
     <div id="settings-panel"
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden flex items-end sm:items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl transition-all transform translate-y-0">
-            <div class="flex justify-between items-center mb-6">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-bold text-gray-700">カード設定</h2>
-                <button onclick="toggleSettings()" class="text-gray-400 hover:text-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
+                <button onclick="toggleSettings()" class="text-gray-400 p-2"><svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                    </svg></button>
             </div>
 
             <div class="space-y-6">
                 <div>
-                    <label class="block text-sm font-medium text-pink-600 mb-2">表面の画像</label>
+                    <label class="block text-xs font-bold text-pink-600 mb-2 uppercase tracking-widest">表面の画像</label>
                     <input type="file" id="upload-front" accept="image/*"
                         class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-pink-600 mb-2">裏面の画像</label>
+                    <label class="block text-xs font-bold text-pink-600 mb-2 uppercase tracking-widest">裏面の画像</label>
                     <input type="file" id="upload-back" accept="image/*"
                         class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100">
                 </div>
 
-                <hr class="border-pink-50">
+                <div class="bg-gray-50 rounded-xl p-4 text-[10px] text-gray-500 leading-relaxed shadow-inner">
+                    <p class="font-bold mb-2 text-pink-600 border-b border-pink-100 pb-1">非公式ツール・免責事項</p>
+
+                    <div class="space-y-2">
+                        <p>
+                            本ツールは、<span class="font-bold text-gray-700">桃園りえる</span>（<a
+                                href="https://x.com/riel_momozono" target="_blank"
+                                class="text-blue-400 hover:underline">@riel_momozono</a>）様のファンによる<span
+                                class="font-bold">非公式ツール</span>です。
+                            桃園りえる様やのなめぷろだくしょん様公式とは一切関係ありません。
+                        </p>
+
+                        <p>
+                            アップロードされる画像はユーザーのローカルストレージにのみ保存され、開発者側では一切保持・送信しません。
+                        </p>
+
+                        <p>
+                            アップロードする画像の著作権・肖像権はユーザー自身が責任を負います。桃園りえる様のガイドラインや著作權を必ず尊重してください。
+                        </p>
+                    </div>
+
+                    <div
+                        class="mt-4 flex justify-between items-center text-pink-400 font-bold border-t border-gray-200 pt-3">
+                        <a href="https://github.com/kumiin-card/kumiin-card.github.io" target="_blank"
+                            rel="noopener noreferrer" class="hover:underline flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                            </svg>
+                            GitHub
+                        </a>
+                        <span class="text-gray-300">|</span>
+                        <a href="https://github.com/kumiin-card/kumiin-card.github.io/blob/main/LICENSE" target="_blank"
+                            class="hover:underline">
+                            MIT License
+                        </a>
+                    </div>
+                </div>
 
                 <button onclick="clearStorage()"
-                    class="w-full py-2 text-xs text-red-400 hover:bg-red-50 rounded-lg transition-colors">
-                    全データをリセットする
+                    class="w-full py-3 text-[11px] text-red-400 hover:bg-red-50 rounded-xl border border-red-50 transition-colors">
+                    全ての画像データをリセット
                 </button>
             </div>
         </div>
@@ -118,53 +158,46 @@
 
     <script>
         let isFlipped = false;
-        function flipCard() {
-            isFlipped = !isFlipped;
+        let isRotated = false;
+
+        function updateCardTransform() {
             const card = document.getElementById('card-inner');
-            card.style.transform = isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)';
+            card.style.transform = `rotateY(${isFlipped ? 180 : 0}deg) rotateZ(${isRotated ? 180 : 0}deg)`;
         }
 
-        function toggleSettings() {
-            const panel = document.getElementById('settings-panel');
-            panel.classList.toggle('hidden');
-        }
+        function flipCard() { isFlipped = !isFlipped; updateCardTransform(); }
+        function rotateCard(event) { event.stopPropagation(); isRotated = !isRotated; updateCardTransform(); }
+        function toggleSettings() { document.getElementById('settings-panel').classList.toggle('hidden'); }
 
         const sides = ['front', 'back'];
         sides.forEach(side => {
             const input = document.getElementById(`upload-${side}`);
             const display = document.getElementById(`${side}-display`);
-
             const savedImage = localStorage.getItem(`card-${side}`);
-            if (savedImage) {
-                display.innerHTML = `<img src="${savedImage}" class="w-full h-full object-cover">`;
-            }
+            if (savedImage) display.innerHTML = `<img src="${savedImage}" class="w-full h-full object-cover">`;
 
             input.addEventListener('change', function (e) {
                 const file = e.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
-                reader.onload = function (event) {
-                    const base64String = event.target.result;
-                    display.innerHTML = `<img src="${base64String}" class="w-full h-full object-cover">`;
-                    localStorage.setItem(`card-${side}`, base64String);
+                reader.onload = (event) => {
+                    const base64 = event.target.result;
+                    display.innerHTML = `<img src="${base64}" class="w-full h-full object-cover">`;
+                    localStorage.setItem(`card-${side}`, base64);
                 };
                 reader.readAsDataURL(file);
             });
         });
 
         function clearStorage() {
-            if (confirm('全ての画像データを削除しますか？')) {
+            if (confirm('保存されている全ての画像データを削除しますか？')) {
                 localStorage.clear();
                 location.reload();
             }
         }
 
-        // PWA Service Worker
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js');
-            });
+            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
         }
     </script>
 </body>
