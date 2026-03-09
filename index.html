@@ -44,7 +44,7 @@
         <p class="text-[10px] text-pink-400">てんし組なのです！</p>
     </div>
 
-    <div class="perspective-1000 w-[340px] h-[200px] md:w-[400px] md:h-[240px] cursor-pointer" onclick="flipCard()">
+    <div class="perspective-1000 w-[340px] h-[200px] md:w-[400px] md:h-[240px] cursor-pointer z-50" onclick="flipCard()">
         <div id="card-inner" class="relative w-full h-full preserve-3d shadow-2xl rounded-2xl">
 
             <div id="front-display"
@@ -87,7 +87,7 @@
     </button>
 
     <div id="settings-panel"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden flex items-end sm:items-center justify-center p-4">
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden flex items-end sm:items-center justify-center p-4 z-100">
         <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-bold text-gray-700">カード設定</h2>
